@@ -1,7 +1,7 @@
 # silica ⏳
 
-**silica — это высокопроизводительный и масштабируемый таймлайн-календарь для управления задачами, событиями и расписанием.** 
+**silica — It is a high-performance and scalable timeline calendar for managing tasks, events, and schedules.** 
 
 ## 📄 Лицензия (License)
 
-Распространяется под лицензией MIT. Смотрите файл `LICENSE` для деталей.
+Distributed under the MIT License. See the `LICENSE` file for details.
