@@ -12,3 +12,13 @@ pub struct timeLineEvent{
     pub rrule: Option<String>, // for repetitive tasks
     pub color: Option<String>,
 }
+
+#[derive(Deserialize)]
+pub struct ViewportQuery {
+    pub view_start: DateTime<Utc>,
+    pub view_end: DateTime<Utc>,
+}
+
+/*
+This code describes the architecture and data exchange format.
+*/
