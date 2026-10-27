@@ -10,8 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  RustChecks:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +25,7 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf
-
+  
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
