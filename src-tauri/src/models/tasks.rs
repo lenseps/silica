@@ -4,7 +4,7 @@ use uuid::Uuid;
 pub type Timestamp = DateTime<Utc>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TaskStatus {
+pub enum TaskCategory {
     OneTime,
     Interval,
     Instant,
@@ -46,7 +46,7 @@ impl From<TaskData> for Task {
 pub trait TaskView {
     fn task(&self) -> &Task;
     fn task_mut(&mut self) -> &mut Task;
-    fn status(&self) -> TaskStatus;
+    fn category(&self) -> TaskCategory;
 
     fn uuid(&self) -> Uuid {
         self.task().uuid
@@ -98,8 +98,8 @@ impl TaskView for OneTimeTask {
     fn task_mut(&mut self) -> &mut Task {
         &mut self.task
     }
-    fn status(&self) -> TaskStatus {
-        TaskStatus::OneTime
+    fn category(&self) -> TaskCategory {
+        TaskCategory::OneTime
     }
 }
 
@@ -110,8 +110,8 @@ impl TaskView for InstantTask {
     fn task_mut(&mut self) -> &mut Task {
         &mut self.task
     }
-    fn status(&self) -> TaskStatus {
-        TaskStatus::Instant
+    fn category(&self) -> TaskCategory {
+        TaskCategory::Instant
     }
 }
 
@@ -122,8 +122,8 @@ impl TaskView for IntervalTask {
     fn task_mut(&mut self) -> &mut Task {
         &mut self.task
     }
-    fn status(&self) -> TaskStatus {
-        TaskStatus::Interval
+    fn category(&self) -> TaskCategory {
+        TaskCategory::Interval
     }
 }
 
