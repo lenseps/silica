@@ -9,12 +9,21 @@ pub enum TaskCategory {
     Interval,
     Instant,
 }
+
+#[derive(Debug, Clone)]
+pub struct TaskStyle {
+    pub color: String,
+    pub background_color: String,
+}
+
+#[derive(Debug, Clone)]
 pub struct TaskData {
     pub title: String,
     /// Annotation is a brief description below the title
     /// that is displayed without opening the full details of a task.
     pub annotation: Option<String>,
     pub description: Option<String>,
+    pub style: Option<TaskStyle>,
     pub tags: Vec<String>,
 }
 
@@ -25,6 +34,7 @@ pub struct Task {
     annotation: Option<String>,
     description: Option<String>,
     tags: Vec<String>,
+    style: Option<TaskStyle>,
     created: Timestamp,
     ended: Option<Timestamp>,
 }
@@ -37,6 +47,7 @@ impl From<TaskData> for Task {
             annotation: d.annotation,
             description: d.description,
             tags: d.tags,
+            style: d.style,
             created: Utc::now(),
             ended: None,
         }
@@ -65,6 +76,9 @@ pub trait TaskView {
     }
     fn tags(&self) -> &[String] {
         &self.task().tags
+    }
+    fn style(&self) -> Option<&TaskStyle> {
+        self.task().style.as_ref()
     }
     fn ended(&self) -> Option<Timestamp> {
         self.task().ended
