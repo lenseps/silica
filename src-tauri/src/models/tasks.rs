@@ -10,7 +10,6 @@ pub enum TaskStatus {
     Instant,
 }
 pub struct TaskData {
-    pub id: u64,
     pub title: String,
     /// Annotation is a brief description below the title
     /// that is displayed without opening the full details of a task.
@@ -21,7 +20,6 @@ pub struct TaskData {
 
 #[derive(Debug, Clone)]
 pub struct Task {
-    id: u64,
     uuid: Uuid,
     title: String,
     annotation: Option<String>,
@@ -34,7 +32,6 @@ pub struct Task {
 impl From<TaskData> for Task {
     fn from(d: TaskData) -> Self {
         Task {
-            id: d.id,
             uuid: Uuid::new_v4(),
             title: d.title,
             annotation: d.annotation,
@@ -51,9 +48,6 @@ pub trait TaskView {
     fn task_mut(&mut self) -> &mut Task;
     fn status(&self) -> TaskStatus;
 
-    fn id(&self) -> u64 {
-        self.task().id
-    }
     fn uuid(&self) -> Uuid {
         self.task().uuid
     }
