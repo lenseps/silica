@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 pub type Timestamp = DateTime<Utc>;
@@ -88,7 +88,7 @@ pub struct InstantTask {
 #[derive(Debug, Clone)]
 pub struct IntervalTask {
     task: Task,
-    interval: Duration,
+    interval_seconds: u64,
 }
 
 impl TaskView for OneTimeTask {
@@ -140,14 +140,14 @@ impl InstantTask {
 }
 
 impl IntervalTask {
-    pub fn new(data: TaskData, interval: Duration) -> Self {
+    pub fn new(data: TaskData, interval_seconds: u64) -> Self {
         IntervalTask {
             task: data.into(),
-            interval,
+            interval_seconds,
         }
     }
 
-    pub fn interval(&self) -> Duration {
-        self.interval
+    pub fn interval_seconds(&self) -> u64 {
+        self.interval_seconds
     }
 }
