@@ -1,6 +1,8 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
+use super::tags::TagId;
+
 pub type Timestamp = DateTime<Utc>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,7 +26,7 @@ pub struct TaskData {
     pub annotation: Option<String>,
     pub description: Option<String>,
     pub style: Option<TaskStyle>,
-    pub tags: Vec<String>,
+    pub tags: Vec<TagId>,
 }
 
 #[derive(Debug, Clone)]
@@ -33,7 +35,7 @@ pub struct Task {
     title: String,
     annotation: Option<String>,
     description: Option<String>,
-    tags: Vec<String>,
+    tags: Vec<TagId>,
     style: Option<TaskStyle>,
     created: Timestamp,
     ended: Option<Timestamp>,
@@ -58,7 +60,6 @@ pub trait TaskView {
     fn task(&self) -> &Task;
     fn task_mut(&mut self) -> &mut Task;
     fn category(&self) -> TaskCategory;
-
     fn uuid(&self) -> Uuid {
         self.task().uuid
     }
@@ -74,7 +75,7 @@ pub trait TaskView {
     fn description(&self) -> Option<&str> {
         self.task().description.as_deref()
     }
-    fn tags(&self) -> &[String] {
+    fn tags(&self) -> &[TagId] {
         &self.task().tags
     }
     fn style(&self) -> Option<&TaskStyle> {
@@ -83,7 +84,6 @@ pub trait TaskView {
     fn ended(&self) -> Option<Timestamp> {
         self.task().ended
     }
-
     fn end(&mut self) {
         self.task_mut().ended = Some(Utc::now());
     }
@@ -160,7 +160,6 @@ impl IntervalTask {
             interval_seconds,
         }
     }
-
     pub fn interval_seconds(&self) -> u64 {
         self.interval_seconds
     }
