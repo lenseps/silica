@@ -178,15 +178,20 @@ mod tests {
     const ANNOTATION: &str = "Annotation";
     const DESRIPTION: &str = "Description";
 
-    #[test]
-    fn test_create_new_one_time_task() {
-        let data = TaskData {
+    fn generate_task_data() -> TaskData {
+        TaskData {
             title: TITLE.to_string(),
             annotation: Some(ANNOTATION.to_string()),
             description: Some(DESRIPTION.to_string()),
             style: None,
             tags: Vec::new(),
-        };
+        }
+    }
+
+    #[test]
+    fn test_create_new_one_time_task() {
+        let data = generate_task_data();
+
         let task = OneTimeTask::new(data);
 
         assert_eq!(task.title(), TITLE);
@@ -199,13 +204,8 @@ mod tests {
 
     #[test]
     fn test_create_new_instant_task() {
-        let data = TaskData {
-            title: TITLE.to_string(),
-            annotation: Some(ANNOTATION.to_string()),
-            description: Some(DESRIPTION.to_string()),
-            style: None,
-            tags: Vec::new(),
-        };
+        let data = generate_task_data();
+
         let task = InstantTask::new(data);
 
         assert_eq!(task.title(), TITLE);
@@ -218,14 +218,9 @@ mod tests {
 
     #[test]
     fn test_create_new_interval_task() {
-        let data = TaskData {
-            title: TITLE.to_string(),
-            annotation: Some(ANNOTATION.to_string()),
-            description: Some(DESRIPTION.to_string()),
-            style: None,
-            tags: Vec::new(),
-        };
+        let data = generate_task_data();
         let interval_seconds = 100u64;
+
         let task = IntervalTask::new(data, interval_seconds);
 
         assert_eq!(task.title(), TITLE);
