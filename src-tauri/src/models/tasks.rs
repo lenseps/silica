@@ -165,3 +165,34 @@ impl IntervalTask {
         self.interval_seconds
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::assert_matches;
+
+    use crate::models::tasks::{OneTimeTask, TaskCategory, TaskData, TaskView};
+
+    const TITLE: &str = "Title";
+    const ANNOTATION: &str = "Annotation";
+    const DESRIPTION: &str = "Description";
+
+    #[test]
+    fn test_create_new_one_time_task() {
+        let data = TaskData {
+            title: TITLE.to_string(),
+            annotation: Some(ANNOTATION.to_string()),
+            description: Some(DESRIPTION.to_string()),
+            style: None,
+            tags: Vec::new(),
+        };
+        let task = OneTimeTask::new(data);
+
+        assert_eq!(task.title(), TITLE);
+        assert_eq!(task.annotation(), Some(ANNOTATION));
+        assert_eq!(task.description(), Some(DESRIPTION));
+        assert_matches!(task.style(), None);
+        /// FIXME: Added `1` for a short time just to check CI on github workflows.
+        assert_eq!(task.tags().len(), 1);
+        assert_matches!(task.category(), TaskCategory::OneTime);
+    }
+}
