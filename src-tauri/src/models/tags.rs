@@ -9,3 +9,4 @@ pub struct Tag {
     pub name: String,
     pub style: Option<TaskStyle>,
 }
+

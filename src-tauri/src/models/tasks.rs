@@ -4,6 +4,7 @@ use uuid::Uuid;
 use super::tags::TagId;
 
 pub type Timestamp = DateTime<Utc>;
+pub type TaskId = Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TaskCategory {
@@ -31,7 +32,7 @@ pub struct TaskData {
 
 #[derive(Debug, Clone)]
 pub struct Task {
-    uuid: Uuid,
+    uuid: TaskId,
     title: String,
     annotation: Option<String>,
     description: Option<String>,
@@ -44,7 +45,7 @@ pub struct Task {
 impl From<TaskData> for Task {
     fn from(d: TaskData) -> Self {
         Task {
-            uuid: Uuid::new_v4(),
+            uuid: TaskId::new_v4(),
             title: d.title,
             annotation: d.annotation,
             description: d.description,
@@ -60,7 +61,7 @@ pub trait TaskView {
     fn task(&self) -> &Task;
     fn task_mut(&mut self) -> &mut Task;
     fn category(&self) -> TaskCategory;
-    fn uuid(&self) -> Uuid {
+    fn uuid(&self) -> TaskId {
         self.task().uuid
     }
     fn created(&self) -> Timestamp {
