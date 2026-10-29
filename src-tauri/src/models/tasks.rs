@@ -170,7 +170,9 @@ impl IntervalTask {
 mod tests {
     use std::assert_matches;
 
-    use crate::models::tasks::{OneTimeTask, TaskCategory, TaskData, TaskView};
+    use crate::models::tasks::{
+        InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, TaskView,
+    };
 
     const TITLE: &str = "Title";
     const ANNOTATION: &str = "Annotation";
@@ -191,8 +193,47 @@ mod tests {
         assert_eq!(task.annotation(), Some(ANNOTATION));
         assert_eq!(task.description(), Some(DESRIPTION));
         assert_matches!(task.style(), None);
-        /// FIXME: Added `1` for a short time just to check CI on github workflows.
-        assert_eq!(task.tags().len(), 1);
+        assert_eq!(task.tags().len(), 0);
         assert_matches!(task.category(), TaskCategory::OneTime);
+    }
+
+    #[test]
+    fn test_create_new_instant_task() {
+        let data = TaskData {
+            title: TITLE.to_string(),
+            annotation: Some(ANNOTATION.to_string()),
+            description: Some(DESRIPTION.to_string()),
+            style: None,
+            tags: Vec::new(),
+        };
+        let task = InstantTask::new(data);
+
+        assert_eq!(task.title(), TITLE);
+        assert_eq!(task.annotation(), Some(ANNOTATION));
+        assert_eq!(task.description(), Some(DESRIPTION));
+        assert_matches!(task.style(), None);
+        assert_eq!(task.tags().len(), 0);
+        assert_matches!(task.category(), TaskCategory::Instant);
+    }
+
+    #[test]
+    fn test_create_new_interval_task() {
+        let data = TaskData {
+            title: TITLE.to_string(),
+            annotation: Some(ANNOTATION.to_string()),
+            description: Some(DESRIPTION.to_string()),
+            style: None,
+            tags: Vec::new(),
+        };
+        let interval_seconds = 100u64;
+        let task = IntervalTask::new(data, interval_seconds);
+
+        assert_eq!(task.title(), TITLE);
+        assert_eq!(task.annotation(), Some(ANNOTATION));
+        assert_eq!(task.description(), Some(DESRIPTION));
+        assert_matches!(task.style(), None);
+        assert_eq!(task.tags().len(), 0);
+        assert_eq!(task.interval_seconds(), interval_seconds);
+        assert_matches!(task.category(), TaskCategory::Interval);
     }
 }
