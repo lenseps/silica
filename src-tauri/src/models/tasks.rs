@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::styles::TaskStyle;
 use super::tags::TagId;
+use crate::models::styles::StyleId;
 use crate::service::crud::Persistable;
 
 pub type Timestamp = DateTime<Utc>;
@@ -23,7 +23,7 @@ pub struct TaskData {
     /// that is displayed without opening the full details of a task.
     pub annotation: Option<String>,
     pub description: Option<String>,
-    pub style: Option<TaskStyle>,
+    pub style: Option<StyleId>,
     pub tags: Vec<TagId>,
 }
 
@@ -34,7 +34,7 @@ pub struct Task {
     annotation: Option<String>,
     description: Option<String>,
     tags: Vec<TagId>,
-    style: Option<TaskStyle>,
+    style: Option<StyleId>,
     created: Timestamp,
     ended: Option<Timestamp>,
 }
@@ -74,7 +74,7 @@ pub trait TaskView {
     fn tags(&self) -> &[TagId] {
         &self.task().tags
     }
-    fn style(&self) -> Option<&TaskStyle> {
+    fn style(&self) -> Option<&StyleId> {
         self.task().style.as_ref()
     }
     fn ended(&self) -> Option<Timestamp> {
