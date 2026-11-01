@@ -166,7 +166,7 @@ impl Persistable for OneTimeTask {
     fn id(&self) -> &Self::Id {
         &self.task.id
     }
-    fn load_meta_from_old(&mut self, old: &Self) {
+    fn load_meta_from(&mut self, old: &Self) {
         self.task.id = old.task.id;
         self.task.created = old.task.created;
     }
@@ -178,7 +178,7 @@ impl Persistable for InstantTask {
     fn id(&self) -> &Self::Id {
         &self.task.id
     }
-    fn load_meta_from_old(&mut self, old: &Self) {
+    fn load_meta_from(&mut self, old: &Self) {
         self.task.id = old.task.id;
         self.task.created = old.task.created;
     }
@@ -190,7 +190,7 @@ impl Persistable for IntervalTask {
     fn id(&self) -> &Self::Id {
         &self.task.id
     }
-    fn load_meta_from_old(&mut self, old: &Self) {
+    fn load_meta_from(&mut self, old: &Self) {
         self.task.id = old.task.id;
         self.task.created = old.task.created;
     }
@@ -200,8 +200,9 @@ impl Persistable for IntervalTask {
 mod tests {
     use std::assert_matches;
 
-    use crate::models::tasks::{
-        InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, TaskView,
+    use crate::{
+        models::tasks::{InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, TaskView},
+        service::crud::Persistable,
     };
 
     const TITLE: &str = "Title";
@@ -216,6 +217,19 @@ mod tests {
             style: None,
             tags: Vec::new(),
         }
+    }
+
+    #[test]
+    fn test_load_meta_from_old() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+
+        let old_task = OneTimeTask::new(old_data);
+        let mut new_task = OneTimeTask::new(new_data);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
     }
 
     #[test]

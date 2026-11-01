@@ -17,7 +17,7 @@ impl Persistable for TaskStyle {
     fn id(&self) -> &Self::Id {
         &self.id
     }
-    fn load_meta_from_old(&mut self, old: &Self) {
+    fn load_meta_from(&mut self, old: &Self) {
         self.id = old.id;
     }
 }

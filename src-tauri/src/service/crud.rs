@@ -34,7 +34,7 @@ impl std::error::Error for CrudError {
 pub trait Persistable {
     type Id;
     fn id(&self) -> &Self::Id;
-    fn load_meta_from_old(&mut self, old: &Self);
+    fn load_meta_from(&mut self, old: &Self);
 }
 pub struct Crud<T> {
     path: PathBuf,
