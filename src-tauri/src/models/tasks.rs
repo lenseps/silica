@@ -41,7 +41,7 @@ pub struct Task {
 impl From<TaskData> for Task {
     fn from(d: TaskData) -> Self {
         Task {
-            id: TaskId::new_v4(),
+            id: Uuid::new_v4(),
             title: d.title,
             annotation: d.annotation,
             description: d.description,

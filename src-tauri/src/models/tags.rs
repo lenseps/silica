@@ -12,6 +12,16 @@ pub struct Tag {
     pub style: Option<TaskStyle>,
 }
 
+impl Tag {
+    pub fn new(name: String, style: Option<TaskStyle>) -> Self {
+        Tag {
+            id: Uuid::new_v4(),
+            name: name,
+            style: style,
+        }
+    }
+}
+
 impl Persistable for Tag {
     type Id = TagId;
 
