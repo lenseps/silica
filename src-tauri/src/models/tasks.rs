@@ -220,12 +220,39 @@ mod tests {
     }
 
     #[test]
-    fn test_load_meta_from_old() {
+    fn test_load_meta_from_old_one_time_task() {
         let old_data: TaskData = generate_task_data();
         let new_data: TaskData = generate_task_data();
 
         let old_task = OneTimeTask::new(old_data);
         let mut new_task = OneTimeTask::new(new_data);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
+    }
+
+    #[test]
+    fn test_load_meta_from_old_instant_task() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+
+        let old_task = InstantTask::new(old_data);
+        let mut new_task = InstantTask::new(new_data);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
+    }
+
+    #[test]
+    fn test_load_meta_from_old_interval_task() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+        let seconds_amount: u64 = 100;
+
+        let old_task = IntervalTask::new(old_data, seconds_amount);
+        let mut new_task = IntervalTask::new(new_data, seconds_amount);
         new_task.load_meta_from(&old_task);
 
         assert_eq!(new_task.id(), old_task.id());
