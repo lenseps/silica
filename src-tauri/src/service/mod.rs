@@ -1,1 +1,1 @@
-mod crud;
+pub mod crud;

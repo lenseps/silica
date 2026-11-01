@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use super::styles::TaskStyle;
 use super::tags::TagId;
+use crate::service::crud::Persistable;
 
 pub type Timestamp = DateTime<Utc>;
 pub type TaskId = Uuid;
@@ -56,9 +57,7 @@ pub trait TaskView {
     fn task(&self) -> &Task;
     fn task_mut(&mut self) -> &mut Task;
     fn category(&self) -> TaskCategory;
-    fn id(&self) -> TaskId {
-        self.task().id
-    }
+
     fn created(&self) -> Timestamp {
         self.task().created
     }
@@ -158,6 +157,42 @@ impl IntervalTask {
     }
     pub fn interval_seconds(&self) -> u64 {
         self.interval_seconds
+    }
+}
+
+impl Persistable for OneTimeTask {
+    type Id = TaskId;
+
+    fn id(&self) -> &Self::Id {
+        &self.task.id
+    }
+    fn load_meta_from_old(&mut self, old: &Self) {
+        self.task.id = old.task.id;
+        self.task.created = old.task.created;
+    }
+}
+
+impl Persistable for InstantTask {
+    type Id = TaskId;
+
+    fn id(&self) -> &Self::Id {
+        &self.task.id
+    }
+    fn load_meta_from_old(&mut self, old: &Self) {
+        self.task.id = old.task.id;
+        self.task.created = old.task.created;
+    }
+}
+
+impl Persistable for IntervalTask {
+    type Id = TaskId;
+
+    fn id(&self) -> &Self::Id {
+        &self.task.id
+    }
+    fn load_meta_from_old(&mut self, old: &Self) {
+        self.task.id = old.task.id;
+        self.task.created = old.task.created;
     }
 }
 

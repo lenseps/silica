@@ -1,5 +1,5 @@
 use core::fmt;
-use std::path::PathBuf;
+use std::{marker::PhantomData, path::PathBuf};
 
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -38,6 +38,10 @@ pub trait Persistable {
 }
 pub struct Crud<T> {
     path: PathBuf,
+    mutex: tokio::sync::Mutex<()>,
+    // PhantomData field. Crud does not store <T> at runtime.
+    // Use PhantomData<fn() -> T> to keep Crud Sync + Send.
+    _pd: PhantomData<fn() -> T>,
 }
 
 impl<T> Crud<T>
