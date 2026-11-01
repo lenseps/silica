@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
+use super::styles::TaskStyle;
 use super::tags::TagId;
 
 pub type Timestamp = DateTime<Utc>;
@@ -11,12 +12,6 @@ pub enum TaskCategory {
     OneTime,
     Interval,
     Instant,
-}
-
-#[derive(Debug, Clone)]
-pub struct TaskStyle {
-    pub color: String,
-    pub background_color: String,
 }
 
 #[derive(Debug, Clone)]
