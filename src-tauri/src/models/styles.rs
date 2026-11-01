@@ -31,3 +31,20 @@ impl Persistable for TaskStyle {
         self.id = old.id;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{models::styles::TaskStyle, service::crud::Persistable};
+
+    #[test]
+    fn test_load_meta_from_old_works_correcly() {
+        let old_style: TaskStyle =
+            TaskStyle::new("color".to_string(), "background_color".to_string());
+        let mut new_style: TaskStyle =
+            TaskStyle::new("color".to_string(), "background_color".to_string());
+
+        new_style.load_meta_from(&old_style);
+
+        assert_eq!(new_style.id(), old_style.id());
+    }
+}

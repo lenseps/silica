@@ -32,3 +32,22 @@ impl Persistable for Tag {
         self.id = old.id
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        models::{styles::TaskStyle, tags::Tag},
+        service::crud::Persistable,
+    };
+
+    #[test]
+    fn test_load_meta_from_old_works_correcly() {
+        let style: TaskStyle = TaskStyle::new("color".to_string(), "background_color".to_string());
+        let old_tag: Tag = Tag::new("Old".to_string(), Some(style.clone()));
+        let mut new_tag: Tag = Tag::new("New".to_string(), Some(style));
+
+        new_tag.load_meta_from(&old_tag);
+
+        assert_eq!(new_tag.id(), old_tag.id());
+    }
+}
