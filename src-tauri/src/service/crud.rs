@@ -44,6 +44,7 @@ pub struct Crud<T> {
     _pd: PhantomData<fn() -> T>,
 }
 
+// TODO: Implement these methods in Crud.
 impl<T> Crud<T>
 where
     T: Persistable + Serialize + DeserializeOwned,
