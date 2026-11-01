@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::styles::TaskStyle;
@@ -5,7 +6,7 @@ use crate::service::crud::Persistable;
 
 pub type TagId = Uuid;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tag {
     pub id: TagId,
     pub name: String,

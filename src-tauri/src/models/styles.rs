@@ -1,10 +1,11 @@
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::service::crud::Persistable;
 
 pub type StyleId = Uuid;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TaskStyle {
     pub id: StyleId,
     pub color: String,

@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::styles::TaskStyle;
@@ -8,7 +9,7 @@ use crate::service::crud::Persistable;
 pub type Timestamp = DateTime<Utc>;
 pub type TaskId = Uuid;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TaskCategory {
     OneTime,
     Interval,
@@ -26,7 +27,7 @@ pub struct TaskData {
     pub tags: Vec<TagId>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
     id: TaskId,
     title: String,
