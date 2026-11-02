@@ -26,7 +26,7 @@ impl Tag {
 impl Persistable for Tag {
     type Id = TagId;
 
-    fn id(&self) -> &Self::Id {
+    fn get_id(&self) -> &Self::Id {
         &self.id
     }
     fn load_meta_from(&mut self, old: &Self) {
@@ -49,6 +49,6 @@ mod tests {
 
         new_tag.load_meta_from(&old_tag);
 
-        assert_eq!(new_tag.id(), old_tag.id());
+        assert_eq!(new_tag.get_id(), old_tag.get_id());
     }
 }

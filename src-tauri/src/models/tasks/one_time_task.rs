@@ -1,4 +1,8 @@
-use crate::models::tasks::task::{Task, TaskCategory, TaskData, TaskView};
+use crate::{
+    impl_task_view_for_tasks,
+    models::tasks::task::{Task, TaskCategory, TaskData, TaskId, TaskView},
+    service::crud::Persistable,
+};
 
 #[derive(Debug, Clone)]
 pub struct OneTimeTask {
@@ -11,14 +15,4 @@ impl OneTimeTask {
     }
 }
 
-impl TaskView for OneTimeTask {
-    fn task(&self) -> &Task {
-        &self.task
-    }
-    fn task_mut(&mut self) -> &mut Task {
-        &mut self.task
-    }
-    fn category(&self) -> TaskCategory {
-        TaskCategory::OneTime
-    }
-}
+impl_task_view_for_tasks!(OneTimeTask: TaskCategory::OneTime);

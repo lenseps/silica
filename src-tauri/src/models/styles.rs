@@ -25,7 +25,7 @@ impl TaskStyle {
 impl Persistable for TaskStyle {
     type Id = StyleId;
 
-    fn id(&self) -> &Self::Id {
+    fn get_id(&self) -> &Self::Id {
         &self.id
     }
     fn load_meta_from(&mut self, old: &Self) {
@@ -46,6 +46,6 @@ mod tests {
 
         new_style.load_meta_from(&old_style);
 
-        assert_eq!(new_style.id(), old_style.id());
+        assert_eq!(new_style.get_id(), old_style.get_id());
     }
 }

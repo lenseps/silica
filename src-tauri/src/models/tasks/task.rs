@@ -3,6 +3,10 @@ use uuid::Uuid;
 
 use crate::models::styles::StyleId;
 use crate::models::tags::TagId;
+use crate::models::tasks::instant_task::InstantTask;
+use crate::models::tasks::interval_task::IntervalTask;
+use crate::models::tasks::one_time_task::OneTimeTask;
+use crate::service::crud::Persistable;
 
 pub type TaskId = Uuid;
 
@@ -86,12 +90,59 @@ pub trait TaskView {
     }
 }
 
+#[macro_export]
+macro_rules! impl_task_view_for_tasks {
+    ($($task:ty: $category:expr),+) => {
+        $(
+            impl TaskView for $task{
+                fn task(&self) -> &Task {
+                    &self.task
+                }
+                fn task_mut(&mut self) -> &mut Task {
+                    &mut self.task
+                }
+                fn category(&self) -> TaskCategory {
+                    $category
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_persistable_for_tasks {
+    ($($task:ty),+) => {
+        $(
+            impl Persistable for $task {
+                type Id = TaskId;
+
+                fn get_id(&self) -> &Self::Id {
+                    &self.task().id
+                }
+
+                fn load_meta_from(&mut self, old: &Self) {
+                    self.task_mut().id = old.task().id;
+                    self.task_mut().created = old.task().created;
+                }
+            }
+
+        )*
+
+};
+}
+
+impl_persistable_for_tasks!(OneTimeTask);
+impl_persistable_for_tasks!(InstantTask);
+impl_persistable_for_tasks!(IntervalTask);
+
 #[cfg(test)]
 mod tests {
     use std::assert_matches;
 
-    use crate::models::tasks::{
-        InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, task::TaskView,
+    use crate::{
+        models::tasks::{
+            InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, task::TaskView,
+        },
+        service::crud::Persistable,
     };
 
     const TITLE: &str = "Title";
@@ -106,6 +157,46 @@ mod tests {
             style: None,
             tags: Vec::new(),
         }
+    }
+
+    #[test]
+    fn test_load_meta_from_old_one_time_task() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+
+        let old_task = OneTimeTask::new(old_data);
+        let mut new_task = OneTimeTask::new(new_data);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
+    }
+
+    #[test]
+    fn test_load_meta_from_old_instant_task() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+
+        let old_task = InstantTask::new(old_data);
+        let mut new_task = InstantTask::new(new_data);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
+    }
+
+    #[test]
+    fn test_load_meta_from_old_interval_task() {
+        let old_data: TaskData = generate_task_data();
+        let new_data: TaskData = generate_task_data();
+        let seconds_amount: u64 = 100;
+
+        let old_task = IntervalTask::new(old_data, seconds_amount);
+        let mut new_task = IntervalTask::new(new_data, seconds_amount);
+        new_task.load_meta_from(&old_task);
+
+        assert_eq!(new_task.id(), old_task.id());
+        assert_eq!(new_task.created(), old_task.created());
     }
 
     #[test]
