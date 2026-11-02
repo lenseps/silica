@@ -1,6 +1,7 @@
 use crate::{
     impl_task_view_for_tasks,
-    models::tasks::task::{Task, TaskCategory, TaskData, TaskView},
+    models::tasks::task::{Task, TaskCategory, TaskData, TaskId, TaskView},
+    service::crud::Persistable,
 };
 
 #[derive(Debug, Clone)]
