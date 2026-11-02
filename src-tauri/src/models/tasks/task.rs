@@ -86,6 +86,25 @@ pub trait TaskView {
     }
 }
 
+#[macro_export]
+macro_rules! impl_task_view_for_tasks {
+    ($($task:ty: $category:expr),+) => {
+        $(
+            impl TaskView for $task{
+                fn task(&self) -> &Task {
+                    &self.task
+                }
+                fn task_mut(&mut self) -> &mut Task {
+                    &mut self.task
+                }
+                fn category(&self) -> TaskCategory {
+                    $category
+                }
+            }
+        )*
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use std::assert_matches;

@@ -1,4 +1,7 @@
-use crate::models::tasks::task::{Task, TaskCategory, TaskData, TaskView};
+use crate::{
+    impl_task_view_for_tasks,
+    models::tasks::task::{Task, TaskCategory, TaskData, TaskView},
+};
 
 #[derive(Debug, Clone)]
 pub struct InstantTask {
@@ -11,14 +14,4 @@ impl InstantTask {
     }
 }
 
-impl TaskView for InstantTask {
-    fn task(&self) -> &Task {
-        &self.task
-    }
-    fn task_mut(&mut self) -> &mut Task {
-        &mut self.task
-    }
-    fn category(&self) -> TaskCategory {
-        TaskCategory::Instant
-    }
-}
+impl_task_view_for_tasks!(InstantTask: TaskCategory::Instant);
