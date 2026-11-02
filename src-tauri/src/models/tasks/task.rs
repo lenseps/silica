@@ -1,10 +1,12 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
-use super::tags::TagId;
+use crate::models::styles::StyleId;
+use crate::models::tags::TagId;
+
+pub type TaskId = Uuid;
 
 pub type Timestamp = DateTime<Utc>;
-pub type TaskId = Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TaskCategory {
@@ -14,19 +16,13 @@ pub enum TaskCategory {
 }
 
 #[derive(Debug, Clone)]
-pub struct TaskStyle {
-    pub color: String,
-    pub background_color: String,
-}
-
-#[derive(Debug, Clone)]
 pub struct TaskData {
     pub title: String,
     /// Annotation is a brief description below the title
     /// that is displayed without opening the full details of a task.
     pub annotation: Option<String>,
     pub description: Option<String>,
-    pub style: Option<TaskStyle>,
+    pub style: Option<StyleId>,
     pub tags: Vec<TagId>,
 }
 
@@ -37,7 +33,7 @@ pub struct Task {
     annotation: Option<String>,
     description: Option<String>,
     tags: Vec<TagId>,
-    style: Option<TaskStyle>,
+    style: Option<StyleId>,
     created: Timestamp,
     ended: Option<Timestamp>,
 }
@@ -79,7 +75,7 @@ pub trait TaskView {
     fn tags(&self) -> &[TagId] {
         &self.task().tags
     }
-    fn style(&self) -> Option<&TaskStyle> {
+    fn style(&self) -> Option<&StyleId> {
         self.task().style.as_ref()
     }
     fn ended(&self) -> Option<Timestamp> {
@@ -90,88 +86,12 @@ pub trait TaskView {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct OneTimeTask {
-    task: Task,
-}
-
-#[derive(Debug, Clone)]
-pub struct InstantTask {
-    task: Task,
-}
-
-#[derive(Debug, Clone)]
-pub struct IntervalTask {
-    task: Task,
-    interval_seconds: u64,
-}
-
-impl TaskView for OneTimeTask {
-    fn task(&self) -> &Task {
-        &self.task
-    }
-    fn task_mut(&mut self) -> &mut Task {
-        &mut self.task
-    }
-    fn category(&self) -> TaskCategory {
-        TaskCategory::OneTime
-    }
-}
-
-impl TaskView for InstantTask {
-    fn task(&self) -> &Task {
-        &self.task
-    }
-    fn task_mut(&mut self) -> &mut Task {
-        &mut self.task
-    }
-    fn category(&self) -> TaskCategory {
-        TaskCategory::Instant
-    }
-}
-
-impl TaskView for IntervalTask {
-    fn task(&self) -> &Task {
-        &self.task
-    }
-    fn task_mut(&mut self) -> &mut Task {
-        &mut self.task
-    }
-    fn category(&self) -> TaskCategory {
-        TaskCategory::Interval
-    }
-}
-
-impl OneTimeTask {
-    pub fn new(data: TaskData) -> Self {
-        OneTimeTask { task: data.into() }
-    }
-}
-
-impl InstantTask {
-    pub fn new(data: TaskData) -> Self {
-        InstantTask { task: data.into() }
-    }
-}
-
-impl IntervalTask {
-    pub fn new(data: TaskData, interval_seconds: u64) -> Self {
-        IntervalTask {
-            task: data.into(),
-            interval_seconds,
-        }
-    }
-    pub fn interval_seconds(&self) -> u64 {
-        self.interval_seconds
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::assert_matches;
 
     use crate::models::tasks::{
-        InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, TaskView,
+        InstantTask, IntervalTask, OneTimeTask, TaskCategory, TaskData, task::TaskView,
     };
 
     const TITLE: &str = "Title";

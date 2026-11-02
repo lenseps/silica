@@ -1,5 +1,6 @@
-use super::tasks::TaskStyle;
 use uuid::Uuid;
+
+use super::styles::TaskStyle;
 
 pub type TagId = Uuid;
 
