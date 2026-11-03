@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::models::styles::StyleId;
@@ -30,7 +31,7 @@ pub struct TaskData {
     pub tags: Vec<TagId>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
     id: TaskId,
     title: String,

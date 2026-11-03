@@ -1,10 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     impl_task_view_for_tasks,
-    models::tasks::task::{Task, TaskCategory, TaskData, TaskId, TaskView},
-    service::crud::Persistable,
+    models::tasks::task::{Task, TaskCategory, TaskData, TaskView},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OneTimeTask {
     task: Task,
 }
