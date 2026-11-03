@@ -1,2 +1,3 @@
 pub mod errors;
-pub mod tasks;
+pub mod event;
+pub mod task;
