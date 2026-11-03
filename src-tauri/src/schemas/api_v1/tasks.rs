@@ -29,3 +29,13 @@ pub struct TaskResponse {
     pub created: Timestamp,
     pub ended: Option<Timestamp>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TaskUpdate {
+    pub title: String,
+    pub annotation: Option<String>,
+    pub description: Option<String>,
+    pub style: Option<TaskId>,
+    pub tags: Vec<TagId>,
+    pub interval_seconds: Option<u64>,
+}
