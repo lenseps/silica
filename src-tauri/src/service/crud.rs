@@ -43,6 +43,8 @@ pub trait Persistable {
     fn get_id(&self) -> &Self::Id;
     fn load_meta_from(&mut self, old: &Self);
 }
+
+#[derive(Debug)]
 pub struct Crud<T> {
     path: PathBuf,
     mutex: tokio::sync::Mutex<()>,
@@ -51,19 +53,13 @@ pub struct Crud<T> {
     _pd: PhantomData<fn() -> T>,
 }
 
-//A collection for storing unique types
-static ID_SET: Mutex<BTreeSet<TypeId>> = Mutex::new(BTreeSet::new());
-
-// TODO: Implement these methods in Crud.
-impl<T: Display + 'static> Crud<T>
+// TODO: Add tests to check all the `Crud` functional.
+impl<T> Crud<T>
 where
     T: Persistable + Serialize + DeserializeOwned,
     T::Id: PartialEq,
 {
     pub fn new(path: impl Into<PathBuf>) -> Self {
-        let mut set = ID_SET.lock().unwrap();
-        set.insert(TypeId::of::<T>());
-
         Self {
             path: path.into(),
             mutex: tokio::sync::Mutex::new(()),
