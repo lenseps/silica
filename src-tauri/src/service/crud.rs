@@ -1,21 +1,15 @@
 use core::fmt;
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{
-    any::TypeId,
-    collections::BTreeSet,
-    fmt::Display,
-    marker::PhantomData,
-    path::PathBuf,
+    any::TypeId, collections::BTreeSet, fmt::Display, marker::PhantomData, path::PathBuf,
     sync::Mutex,
 };
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, sync::MutexGuard};
-
-use serde::{Serialize, de::DeserializeOwned};
-
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum CrudError {
-    Io(std::io::Error),
-    Serde(serde_json::Error),
+    Io(String),
+    Serde(String),
     NotFound,
     DuplicateId,
 }
@@ -31,26 +25,16 @@ impl fmt::Display for CrudError {
     }
 }
 
-impl std::error::Error for CrudError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            CrudError::Io(e) => Some(e),
-            CrudError::Serde(e) => Some(e),
-            _ => None,
-        }
-    }
-}
-
 /*Convertation Error write/out, and realize trait for CrudError*/
 impl From<serde_json::Error> for CrudError {
     fn from(err: serde_json::Error) -> Self {
-        CrudError::Serde(err)
+        CrudError::Serde(err.to_string())
     }
 }
 
 impl From<std::io::Error> for CrudError {
     fn from(err: std::io::Error) -> Self {
-        CrudError::Io(err)
+        CrudError::Io(err.to_string())
     }
 }
 
@@ -93,7 +77,7 @@ where
         let mut file = match tokio::fs::File::open(&self.path).await {
             Ok(f) => f,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()), // if file not found, return empty
-            Err(e) => return Err(CrudError::Io(e)),
+            Err(e) => return Err(CrudError::Io(e.to_string())),
         };
 
         let mut buffer = Vec::new();
@@ -110,7 +94,7 @@ where
 
     async fn write(&self, items: &[T]) -> Result<(), CrudError> {
         let bytes = serde_json::to_vec_pretty(items)?;
-        
+
         let mut file = tokio::fs::File::create(&self.path).await?;
         file.write_all(&bytes).await?;
         Ok(())
@@ -122,7 +106,7 @@ where
         let mut items = self.read().await?;
 
         if items.iter().any(|i| i.get_id() == model.get_id()) {
-             return Err(CrudError::DuplicateId);
+            return Err(CrudError::DuplicateId);
         }
 
         items.push(model);
@@ -134,7 +118,7 @@ where
     pub async fn get_all(&self) -> Result<Vec<T>, CrudError> {
         let _guard = self.mutex.lock().await;
         let items = self.read().await?;
-        Ok(items) 
+        Ok(items)
     }
 
     pub async fn get_by_id(&self, id: T::Id) -> Result<Option<T>, CrudError> {
@@ -146,21 +130,21 @@ where
     pub async fn update(&self, id: T::Id, model: T) -> Result<(), CrudError> {
         let _guard = self.mutex.lock().await;
         let mut items = self.read().await?;
-        
+
         let pos = items
             .iter()
             .position(|t| *t.get_id() == id)
             .ok_or(CrudError::NotFound)?;
-            
+
         let mut model = model;
-        
+
         //checked model
         if model.get_id() != &id {
             return Err(CrudError::NotFound);
         }
         model.load_meta_from(&items[pos]);
         items[pos] = model;
-        
+
         self.write(&items).await?;
         Ok(())
     }
@@ -181,13 +165,13 @@ where
         let _guard = self.mutex.lock().await;
         let mut items = self.read().await?;
         let len = items.len();
-        
+
         items.retain(|t| *t.get_id() != id);
-        
+
         if items.len() == len {
             return Err(CrudError::NotFound);
         }
-        
+
         self.write(&items).await?;
         Ok(())
     }
