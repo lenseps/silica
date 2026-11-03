@@ -1,12 +1,12 @@
 use core::fmt;
 use std::{marker::PhantomData, path::PathBuf};
 
-use serde::{Serialize, de::DeserializeOwned};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum CrudError {
-    Io(std::io::Error),
-    Serde(serde_json::Error),
+    Io(String),
+    Serde(String),
     NotFound,
     DuplicateId,
 }
@@ -22,15 +22,6 @@ impl fmt::Display for CrudError {
     }
 }
 
-impl std::error::Error for CrudError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            CrudError::Io(e) => Some(e),
-            CrudError::Serde(e) => Some(e),
-            _ => None,
-        }
-    }
-}
 pub trait Persistable {
     type Id;
     fn get_id(&self) -> &Self::Id;
