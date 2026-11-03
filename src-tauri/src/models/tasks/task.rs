@@ -13,7 +13,7 @@ pub type TaskId = Uuid;
 
 pub type Timestamp = DateTime<Utc>;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TaskCategory {
     OneTime,
     Interval,

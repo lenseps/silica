@@ -1,6 +1,7 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 mod commands;
 mod models;
+mod schemas;
 mod service;
 
 pub fn run() {
