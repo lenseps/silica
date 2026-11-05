@@ -5,6 +5,7 @@ use std::{
     sync::Mutex,
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CrudError {
@@ -91,8 +92,16 @@ where
     async fn write(&self, items: &[T]) -> Result<(), CrudError> {
         let bytes = serde_json::to_vec_pretty(items)?;
 
-        let mut file = tokio::fs::File::create(&self.path).await?;
-        file.write_all(&bytes).await?;
+        let mut tmp = self.path.clone().into_os_string();
+        tmp.push(format!("{}.tmp", Uuid::new_v4()));
+        let tmp = PathBuf::from(tmp);
+
+        {
+            let mut f = tokio::fs::File::create(&tmp).await?;
+            f.write_all(&bytes).await?;
+            f.sync_all().await?;
+        }
+        tokio::fs::rename(&tmp, &self.path).await?;
         Ok(())
     }
 
