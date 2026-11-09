@@ -1,8 +1,8 @@
 [package]
 name = "silica"
 version = "2026.11.7"
-description = "A Tauri App"
-authors = ["you"]
+description = "A back-end part for the scalable timeline calendar with tasks, events, and scheduling."
+authors = ["Les-S-niK", "lenseps", "nikitu0008-collab"]
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
