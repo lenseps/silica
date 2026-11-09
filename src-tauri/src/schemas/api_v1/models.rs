@@ -1,23 +1,21 @@
 use serde::{Deserialize, Serialize};
 
-use crate::models::tags::{Tag, TagId};
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
-pub enum TagRequest {
-    Add { data: Tag },
+pub enum ApiModelRequest<IdT, T> {
+    Add { data: T },
     GetAll,
-    GetById { id: TagId },
-    Update { id: TagId, data: Tag },
+    GetById { id: IdT },
+    Update { id: IdT, data: T },
     DeleteAll,
-    DeleteById { id: TagId },
+    DeleteById { id: IdT },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
-pub enum TagResponse {
+pub enum ApiModelResponse<T> {
     Empty,
-    Item { data: Tag },
-    List { data: Vec<Tag> },
+    Item { data: T },
+    List { data: Vec<T> },
     Error { message: String },
 }

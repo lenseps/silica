@@ -129,7 +129,7 @@ where
         Ok(items.into_iter().find(|t| *t.get_id() == id))
     }
 
-    pub async fn update(&self, id: T::Id, model: T) -> Result<(), CrudError> {
+    pub async fn update(&self, id: T::Id, mut model: T) -> Result<(), CrudError> {
         let _guard = self.mutex.lock().await;
         let mut items = self.read().await?;
 
@@ -138,12 +138,6 @@ where
             .position(|t| *t.get_id() == id)
             .ok_or(CrudError::NotFound)?;
 
-        let mut model = model;
-
-        //checked model
-        if model.get_id() != &id {
-            return Err(CrudError::NotFound);
-        }
         model.load_meta_from(&items[pos]);
         items[pos] = model;
 
