@@ -29,8 +29,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Compute and Commit CalVer
+      - name: Install cargo-edit
+        run: cargo install cargo-edit --locked
+
+      - name: Compute CalVer, update VERSION + Cargo.toml, commit & push
         run: |
+          set -euo pipefail
+
           git pull --rebase origin "${{ github.ref_name }}" || true
 
           CURRENT_VERSION=$(cat VERSION 2>/dev/null || echo "0.0.0")
@@ -53,17 +58,15 @@ jobs:
           echo "New version: $NEW_VERSION"
           echo "$NEW_VERSION" > VERSION
 
-          if [[ -n $(git status --porcelain VERSION) ]]; then
-            git add VERSION
-            git commit -m "chore(version): bump CalVer version to $NEW_VERSION"
-            git push origin HEAD:${{ github.ref_name }}
-          else
-            echo "VERSION file unchanged. Nothing to commit."
+          ( cd src-tauri && cargo set-version "$NEW_VERSION" )
+
+          if [[ -z $(git status --porcelain) ]]; then
+            echo "No version changes to commit."
+            exit 0
           fi
-      
-      - name: Install cargo-edit
-        working-directory: src-tauri
-        run: cargo install cargo-edit
-      - name: Update Cargo.toml version
-        working-directory: src-tauri
-        run: cargo set-version "$(cat ../VERSION)"
+
+          git add VERSION
+          git add -A -- '*Cargo.toml' '*Cargo.lock' 2>/dev/null || true
+
+          git commit -m "chore(version): bump CalVer version to $NEW_VERSION"
+          git push origin "HEAD:${{ github.ref_name }}"
