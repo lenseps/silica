@@ -1,0 +1,54 @@
+name: Up CalVer and Commit
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  bump-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Compute and Commit CalVer
+        run: |
+          CURRENT_VERSION=$(cat VERSION 2>/dev/null || echo "0.0.0")
+          echo "Current version: $CURRENT_VERSION"
+
+          YEAR=$(date -u +%Y)
+          MONTH=$(date -u +%-m)
+
+          CUR_YEAR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          CUR_MONTH=$(echo $CURRENT_VERSION | cut -d. -f2)
+          CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+
+          if [[ "$YEAR" != "$CUR_YEAR" || "$MONTH" != "$CUR_MONTH" ]]; then
+            NEW_VERSION="$YEAR.$MONTH.0"
+          else
+            NEW_PATCH=$((CUR_PATCH + 1))
+            NEW_VERSION="$YEAR.$MONTH.$NEW_PATCH"
+          fi
+
+          echo "New version: $NEW_VERSION"
+
+          echo "$NEW_VERSION" > VERSION
+
+          if [[ -n $(git status --porcelain VERSION) ]]; then
+            git add VERSION
+            git commit -m "chore(version): bump CalVer version to $NEW_VERSION [skip ci]"
+            git push
+          else
+            echo "VERSION file unchanged. Nothing to commit."
+          fi
