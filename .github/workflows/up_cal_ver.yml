@@ -1,40 +1,47 @@
-name: Up CalVer and PR
+name: Bump CalVer and Commit
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore:
+      - master
   workflow_dispatch:
 
+concurrency:
+  group: calver-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  bump-and-pr:
+  bump-and-commit:
+    if: github.ref_name != 'master' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref_name }}
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Compute CalVer and Create Branch
-        id: calver
+      - name: Compute and Commit CalVer
         run: |
+          git pull --rebase origin "${{ github.ref_name }}" || true
+
           CURRENT_VERSION=$(cat VERSION 2>/dev/null || echo "0.0.0")
           echo "Current version: $CURRENT_VERSION"
 
           YEAR=$(date -u +%Y)
           MONTH=$(date -u +%-m)
-          CUR_YEAR=$(echo $CURRENT_VERSION | cut -d. -f1)
-          CUR_MONTH=$(echo $CURRENT_VERSION | cut -d. -f2)
-          CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+
+          CUR_YEAR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
+          CUR_MONTH=$(echo "$CURRENT_VERSION" | cut -d. -f2)
+          CUR_PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
 
           if [[ "$YEAR" != "$CUR_YEAR" || "$MONTH" != "$CUR_MONTH" ]]; then
             NEW_VERSION="$YEAR.$MONTH.0"
@@ -47,27 +54,9 @@ jobs:
           echo "$NEW_VERSION" > VERSION
 
           if [[ -n $(git status --porcelain VERSION) ]]; then
-            BRANCH_NAME="chore/bump-version-$NEW_VERSION"
-            echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
-            echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-
-            git checkout -b "$BRANCH_NAME"
             git add VERSION
             git commit -m "chore(version): bump CalVer version to $NEW_VERSION"
-            git push origin "$BRANCH_NAME"
+            git push origin HEAD:${{ github.ref_name }}
           else
-            echo "VERSION file unchanged."
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "VERSION file unchanged. Nothing to commit."
           fi
-
-      - name: Create Pull Request
-        if: steps.calver.outputs.has_changes == 'true'
-        run: |
-          gh pr create \
-            --base master \
-            --head "${{ steps.calver.outputs.branch_name }}" \
-            --title "chore(version): bump CalVer to ${{ steps.calver.outputs.new_version }}" \
-            --body "Automatically CalVer updating to **${{ steps.calver.outputs.new_version }}**."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
