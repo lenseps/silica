@@ -60,3 +60,10 @@ jobs:
           else
             echo "VERSION file unchanged. Nothing to commit."
           fi
+      
+      - name: Install cargo-edit
+        working-directory: src-tauri
+        run: cargo install cargo-edit
+      - name: Update Cargo.toml version
+        working-directory: src-tauri
+        run: cargo set-version "$(cat ../VERSION)"
