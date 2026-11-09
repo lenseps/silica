@@ -1,2 +1,4 @@
-pub mod event;
-pub mod task;
+pub mod events;
+pub mod styles;
+pub mod tags;
+pub mod tasks;
