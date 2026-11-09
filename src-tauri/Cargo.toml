@@ -1,6 +1,6 @@
 [package]
 name = "silica"
-version = "2026.11.10"
+version = "2026.11.11"
 description = "A back-end part for the scalable timeline calendar with tasks, events, and scheduling."
 authors = ["Les-S-niK", "lenseps", "nikitu0008-collab"]
 edition = "2024"
