@@ -55,7 +55,7 @@ jobs:
 
           if [[ -n $(git status --porcelain VERSION) ]]; then
             git add VERSION
-            git commit -m "chore(version): bump CalVer version to $NEW_VERSION [skip ci]"
+            git commit -m "chore(version): bump CalVer version to $NEW_VERSION"
             git push origin HEAD:${{ github.ref_name }}
           else
             echo "VERSION file unchanged. Nothing to commit."
