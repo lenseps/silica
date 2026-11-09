@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   bump-and-commit:
-    if: github.ref_name != 'master'
+    if: github.ref_name != 'master' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
