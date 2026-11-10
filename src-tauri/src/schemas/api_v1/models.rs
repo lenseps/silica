@@ -19,5 +19,4 @@ pub enum ApiModelResponse<T> {
     Empty,
     Item { data: T },
     List { data: Vec<T> },
-    Error { message: String },
 }

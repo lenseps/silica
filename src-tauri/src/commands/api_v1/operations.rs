@@ -2,14 +2,14 @@ use serde::{Serialize, de::DeserializeOwned};
 
 use crate::commands::api_v1::errors::CommandError;
 use crate::schemas::api_v1::models::{ApiModelRequest, ApiModelResponse};
-use crate::service::crud::{Crud, Persistable};
+use crate::service::crud::{Crud, CrudError, Persistable};
 
 pub fn match_operation_result<T>(
-    result: ApiModelResponse<T>,
+    result: Result<ApiModelResponse<T>, CrudError>,
 ) -> Result<ApiModelResponse<T>, CommandError> {
-    match &result {
-        ApiModelResponse::Error { message } => Err(CommandError::UnknownError(message.clone())),
-        _ => Ok(result),
+    match result {
+        Ok(model) => Ok(model),
+        Err(err) => Err(CommandError::CrudError(err.to_string())),
     }
 }
 pub trait CrudCommandOperations<T>
@@ -19,67 +19,37 @@ where
 {
     fn crud(&self) -> &Crud<T>;
 
-    async fn add(&self, data: T) -> ApiModelResponse<T> {
-        let add_result = self.crud().add(data.clone()).await;
-        match add_result {
-            Ok(_) => ApiModelResponse::Item { data },
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
-        }
+    async fn add(&self, data: T) -> Result<ApiModelResponse<T>, CrudError> {
+        self.crud().add(data.clone()).await?;
+        Ok(ApiModelResponse::Item { data })
     }
 
-    async fn get_all(&self) -> ApiModelResponse<T> {
-        let get_result = self.crud().get_all().await;
+    async fn get_all(&self) -> Result<ApiModelResponse<T>, CrudError> {
+        let get_result = self.crud().get_all().await?;
+        Ok(ApiModelResponse::List { data: get_result })
+    }
+
+    async fn get_by_id(&self, id: T::Id) -> Result<ApiModelResponse<T>, CrudError> {
+        let get_result = self.crud().get_by_id(id).await?;
         match get_result {
-            Ok(data) => ApiModelResponse::List { data },
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
+            Some(data) => Ok(ApiModelResponse::Item { data }),
+            None => Ok(ApiModelResponse::Empty),
         }
     }
 
-    async fn get_by_id(&self, id: T::Id) -> ApiModelResponse<T> {
-        let get_result = self.crud().get_by_id(id).await;
-        match get_result {
-            Ok(opt_data) => match opt_data {
-                Some(data) => ApiModelResponse::Item { data },
-                None => ApiModelResponse::Empty,
-            },
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
-        }
+    async fn update(&self, id: T::Id, new_data: T) -> Result<ApiModelResponse<T>, CrudError> {
+        self.crud().update(id, new_data).await?;
+        Ok(ApiModelResponse::Empty)
     }
 
-    async fn update(&self, id: T::Id, new_data: T) -> ApiModelResponse<T> {
-        let update_result = self.crud().update(id, new_data).await;
-        match update_result {
-            Ok(_) => ApiModelResponse::Empty,
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
-        }
+    async fn delete_all(&self) -> Result<ApiModelResponse<T>, CrudError> {
+        self.crud().delete_all().await?;
+        Ok(ApiModelResponse::Empty)
     }
 
-    async fn delete_all(&self) -> ApiModelResponse<T> {
-        let delete_all_result = self.crud().delete_all().await;
-        match delete_all_result {
-            Ok(_) => ApiModelResponse::Empty,
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
-        }
-    }
-
-    async fn delete_by_id(&self, id: T::Id) -> ApiModelResponse<T> {
-        let delete_by_id_result = self.crud().delete_by_id(id).await;
-        match delete_by_id_result {
-            Ok(_) => ApiModelResponse::Empty,
-            Err(err) => ApiModelResponse::Error {
-                message: err.to_string(),
-            },
-        }
+    async fn delete_by_id(&self, id: T::Id) -> Result<ApiModelResponse<T>, CrudError> {
+        self.crud().delete_by_id(id).await?;
+        Ok(ApiModelResponse::Empty)
     }
 }
 
