@@ -1,3 +1,4 @@
+mod errors;
 pub mod events;
 pub mod operations;
 pub mod styles;
