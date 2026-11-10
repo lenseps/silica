@@ -1,14 +1,16 @@
 use serde::{Deserialize, Serialize};
 
+use crate::service::crud::Persistable;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
-pub enum ApiModelRequest<IdT, T> {
+pub enum ApiModelRequest<T: Persistable> {
     Add { data: T },
     GetAll,
-    GetById { id: IdT },
-    Update { id: IdT, data: T },
+    GetById { id: T::Id },
+    Update { id: T::Id, data: T },
     DeleteAll,
-    DeleteById { id: IdT },
+    DeleteById { id: T::Id },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
