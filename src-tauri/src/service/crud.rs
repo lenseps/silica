@@ -138,9 +138,6 @@ where
             .position(|t| *t.get_id() == id)
             .ok_or(CrudError::NotFound)?;
 
-        if model.get_id() != &id {
-            return Err(CrudError::NotFound);
-        }
         model.load_meta_from(&items[pos]);
         items[pos] = model;
 
@@ -503,19 +500,6 @@ mod tests {
         // delete_all
         crud.delete_all().await.unwrap();
         assert!(crud.get_all().await.unwrap().is_empty());
-
-        cleanup(&path).await;
-    }
-    #[tokio::test]
-    async fn update_returns_error_when_model_id_differs_from_requested_id() {
-        let path = test_path();
-        let crud = Crud::<TestModel>::new(&path);
-
-        crud.add(model(1, "First")).await.unwrap();
-
-        let result = crud.update(1, model(2, "Different ID")).await;
-
-        assert!(matches!(result, Err(CrudError::NotFound)));
 
         cleanup(&path).await;
     }
