@@ -3090,7 +3090,7 @@ dependencies = [
 
 [[package]]
 name = "silica"
-version = "2026.11.14"
+version = "2026.11.15"
 dependencies = [
  "chrono",
  "serde",
