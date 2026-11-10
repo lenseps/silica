@@ -138,6 +138,9 @@ where
             .position(|t| *t.get_id() == id)
             .ok_or(CrudError::NotFound)?;
 
+        if model.get_id() != &id {
+            return Err(CrudError::NotFound);
+        }
         model.load_meta_from(&items[pos]);
         items[pos] = model;
 

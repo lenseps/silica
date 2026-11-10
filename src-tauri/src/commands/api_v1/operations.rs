@@ -21,7 +21,7 @@ where
     async fn get_all(crud: &Crud<T>) -> ApiModelResponse<T> {
         let get_result = crud.get_all().await;
         match get_result {
-            Ok(data) => ApiModelResponse::List { data: data },
+            Ok(data) => ApiModelResponse::List { data },
             Err(err) => ApiModelResponse::Error {
                 message: err.to_string(),
             },
@@ -32,7 +32,7 @@ where
         let get_result = crud.get_by_id(id).await;
         match get_result {
             Ok(opt_data) => match opt_data {
-                Some(data) => ApiModelResponse::Item { data: data },
+                Some(data) => ApiModelResponse::Item { data },
                 None => ApiModelResponse::Empty,
             },
             Err(err) => ApiModelResponse::Error {
@@ -62,12 +62,9 @@ where
     }
 
     async fn delete_by_id(crud: &Crud<T>, id: T::Id) -> ApiModelResponse<T> {
-        let delete_by_id_result = crud.get_by_id(id).await;
+        let delete_by_id_result = crud.delete_by_id(id).await;
         match delete_by_id_result {
-            Ok(opt_data) => match opt_data {
-                Some(data) => ApiModelResponse::Item { data: data },
-                None => ApiModelResponse::Empty,
-            },
+            Ok(_) => ApiModelResponse::Empty,
             Err(err) => ApiModelResponse::Error {
                 message: err.to_string(),
             },
