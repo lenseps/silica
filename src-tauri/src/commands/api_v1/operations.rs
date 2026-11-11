@@ -4,14 +4,6 @@ use crate::commands::api_v1::errors::CommandError;
 use crate::schemas::api_v1::models::{ApiModelRequest, ApiModelResponse};
 use crate::service::crud::{Crud, CrudError, Persistable};
 
-pub fn match_operation_result<T>(
-    result: Result<ApiModelResponse<T>, CrudError>,
-) -> Result<ApiModelResponse<T>, CommandError> {
-    match result {
-        Ok(model) => Ok(model),
-        Err(err) => Err(CommandError::CrudError(err.to_string())),
-    }
-}
 pub trait CrudCommandOperations<T>
 where
     T: Clone + Serialize + DeserializeOwned + Persistable,
@@ -87,5 +79,14 @@ where
             let result = operations.delete_by_id(id).await;
             match_operation_result(result)
         }
+    }
+}
+
+pub fn match_operation_result<T>(
+    result: Result<ApiModelResponse<T>, CrudError>,
+) -> Result<ApiModelResponse<T>, CommandError> {
+    match result {
+        Ok(model) => Ok(model),
+        Err(err) => Err(CommandError::CrudError(err.to_string())),
     }
 }
