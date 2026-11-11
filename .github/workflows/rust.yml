@@ -3,8 +3,12 @@ name: Rust
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'src-tauri/**'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'src-tauri/**'
 
 env:
   CARGO_TERM_COLOR: always
@@ -25,7 +29,7 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf
-  
+
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -35,7 +39,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-          
+
       - name: Check formatting
         working-directory: src-tauri
         run: cargo fmt --all -- --check
