@@ -36,7 +36,12 @@ pub fn run() {
             styles_crud: Crud::new(STYLES_CRUD_PATH),
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(generate_handler![crate::commands::api_v1::tags::tags])
+        .invoke_handler(generate_handler![
+            crate::commands::api_v1::tags::tags,
+            crate::commands::api_v1::events::events,
+            crate::commands::api_v1::tasks::tasks,
+            crate::commands::api_v1::styles::styles,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
