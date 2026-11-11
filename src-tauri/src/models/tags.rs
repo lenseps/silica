@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::styles::TaskStyle;
-use crate::service::crud::Persistable;
+use crate::{models::styles::StyleId, service::crud::Persistable};
 
 pub type TagId = Uuid;
 
@@ -10,13 +9,13 @@ pub type TagId = Uuid;
 pub struct Tag {
     pub id: TagId,
     pub name: String,
-    pub style: Option<TaskStyle>,
+    pub style: Option<StyleId>,
 }
 
 impl Tag {
-    pub fn new(name: String, style: Option<TaskStyle>) -> Self {
+    pub fn new(name: String, style: Option<StyleId>) -> Self {
         Tag {
-            id: Uuid::new_v4(),
+            id: TagId::new_v4(),
             name: name,
             style: style,
         }
@@ -37,15 +36,14 @@ impl Persistable for Tag {
 #[cfg(test)]
 mod tests {
     use crate::{
-        models::{styles::TaskStyle, tags::Tag},
+        models::{styles::StyleId, tags::Tag},
         service::crud::Persistable,
     };
 
     #[test]
     fn test_persistent_load_meta_from_old_tag() {
-        let style: TaskStyle = TaskStyle::new("color".to_string(), "background_color".to_string());
-        let old_tag: Tag = Tag::new("Old".to_string(), Some(style.clone()));
-        let mut new_tag: Tag = Tag::new("New".to_string(), Some(style));
+        let old_tag: Tag = Tag::new("Old".to_string(), Some(StyleId::new_v4()));
+        let mut new_tag: Tag = Tag::new("New".to_string(), None);
 
         new_tag.load_meta_from(&old_tag);
 
