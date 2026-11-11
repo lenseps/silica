@@ -3,7 +3,7 @@ use tauri::generate_handler;
 use crate::{
     models::{
         records::{event::Event, task::Task},
-        styles::TaskStyle,
+        styles::Style,
         tags::Tag,
     },
     service::crud::Crud,
@@ -24,7 +24,7 @@ struct AppState {
     tasks_crud: Crud<Task>,
     events_crud: Crud<Event>,
     tags_crud: Crud<Tag>,
-    styles_crud: Crud<TaskStyle>,
+    styles_crud: Crud<Style>,
 }
 
 pub fn run() {

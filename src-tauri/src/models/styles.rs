@@ -6,15 +6,15 @@ use crate::service::crud::Persistable;
 pub type StyleId = Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TaskStyle {
+pub struct Style {
     pub id: StyleId,
     pub color: String,
     pub background_color: String,
 }
 
-impl TaskStyle {
+impl Style {
     pub fn new(color: String, background_color: String) -> Self {
-        TaskStyle {
+        Style {
             id: Uuid::new_v4(),
             color: color,
             background_color: background_color,
@@ -22,7 +22,7 @@ impl TaskStyle {
     }
 }
 
-impl Persistable for TaskStyle {
+impl Persistable for Style {
     type Id = StyleId;
 
     fn get_id(&self) -> &Self::Id {
@@ -35,14 +35,12 @@ impl Persistable for TaskStyle {
 
 #[cfg(test)]
 mod tests {
-    use crate::{models::styles::TaskStyle, service::crud::Persistable};
+    use crate::{models::styles::Style, service::crud::Persistable};
 
     #[test]
     fn test_persistent_load_meta_from_old_style() {
-        let old_style: TaskStyle =
-            TaskStyle::new("color".to_string(), "background_color".to_string());
-        let mut new_style: TaskStyle =
-            TaskStyle::new("color".to_string(), "background_color".to_string());
+        let old_style: Style = Style::new("color".to_string(), "background_color".to_string());
+        let mut new_style: Style = Style::new("color".to_string(), "background_color".to_string());
 
         new_style.load_meta_from(&old_style);
 
