@@ -15,10 +15,10 @@ mod models;
 mod schemas;
 mod service;
 
-const TASKS_CRUD_PATH: &str = "./tags.json";
-const EVENTS_CRUD_PATH: &str = "./tags.json";
+const TASKS_CRUD_PATH: &str = "./tasks.json";
+const EVENTS_CRUD_PATH: &str = "./events.json";
 const TAGS_CRUD_PATH: &str = "./tags.json";
-const STYLES_CRUD_PATH: &str = "./tags.json";
+const STYLES_CRUD_PATH: &str = "./styles.json";
 
 struct AppState {
     tasks_crud: Crud<Task>,
